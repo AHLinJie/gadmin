@@ -38,7 +38,7 @@ class GovProject(BaseModel):
     bid_no = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'招标编号')
     bid_person = models.CharField(max_length=128, verbose_name=u'招标人')
     bid_org_id = models.IntegerField(verbose_name=u'招标机构id')
-    let_contract_time = models.DateTimeField(blank=True, null=True, verbose_name=u'开始发包时间')
+    let_contract_time = models.DateTimeField(blank=True, null=True, verbose_name=u'开始招标时间')
     off_bid_time = models.DateTimeField(blank=True, null=True, verbose_name=u'截止投标时间')
     work_start_time = models.DateTimeField(blank=True, null=True, verbose_name=u'工期开始时间')
     work_end_time = models.DateTimeField(blank=True, null=True, verbose_name=u'工期结束时间')

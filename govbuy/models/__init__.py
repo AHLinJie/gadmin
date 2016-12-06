@@ -1,7 +1,7 @@
 # coding=utf-8
 from .bidresult import BidResult
 from .chargeperson import ChargePerson
-from .govhost import GovHostInfo
+from .govhost import GovHostInfo, CrawlPage
 from .govproject import GovProject
 from .organization import Organization
 from .procarry import ProCarry

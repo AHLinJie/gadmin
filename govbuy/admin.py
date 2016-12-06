@@ -1,7 +1,6 @@
 # coding=utf-8
 from django.contrib import admin
-from .models import GovHostInfo, ProContract, ProCarry, ChargePerson, GovProject, BidResult, Organization
-from scraper.apis.v1.crawl import crawl_purchase_url
+from .models import GovHostInfo, ProContract, ProCarry, ChargePerson, GovProject, BidResult, Organization, CrawlPage
 
 
 class GovProjectAdmin(admin.ModelAdmin):
@@ -15,8 +14,8 @@ admin.site.register(GovProject, GovProjectAdmin)
 
 
 class GovHostInfoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'host_url', 'gov_level', 'created', 'modified')
-    list_filter = ('created', 'gov_level')
+    list_display = ('id', 'name', 'host_url', 'gov_level', 'is_open', 'created', 'modified')
+    list_filter = ('created', 'gov_level', 'is_open')
     search_fields = ['=id', 'name']
     date_hierarchy = 'created'
 
@@ -24,8 +23,6 @@ class GovHostInfoAdmin(admin.ModelAdmin):
         # type: (HttpRequest, List[CashOut])
         """
         """
-        for q in queryset:
-            crawl_purchase_url(q.purchase_url)
         return self.message_user(request, 'ok')
 
     reject_cash_out.short_description = '批量拒绝用户提现'
@@ -81,7 +78,32 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'phone', 'created', 'modified')
     list_filter = ('created', 'org_type')
     search_fields = ['=id', 'name', 'address']
-    date_hierarchy = 'created'
+    # date_hierarchy = 'created'
 
 
 admin.site.register(Organization, OrganizationAdmin)
+
+
+class CrawlPageAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'host_id',
+        'host_url',
+        'target_page',
+        'is_crawled',
+        'crawl_time',
+        'created'
+    )
+    list_filter = ('is_crawled',)
+    search_fields = ('host_id', 'html_source_code', 'logogram')
+    date_hierarchy = 'crawl_time'
+
+    def target_page(self, obj):
+        x = '<a target="_blank" href="%s">%s</a>' % (obj.project_page_link(), obj.logogram)
+        return x
+
+    target_page.allow_tags = True
+    target_page.short_description = u"目标页面"
+
+
+admin.site.register(CrawlPage, CrawlPageAdmin)
