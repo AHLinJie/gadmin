@@ -31,7 +31,7 @@ class GovProject(BaseModel):
         (POST_QUALIFICATION, u'资格后审'),
     )
 
-    name = models.CharField(max_length=128, verbose_name=u'名称')
+    name = models.CharField(max_length=128, verbose_name=u'项目名称')
     issue_org_id = models.IntegerField(blank=True, null=True, verbose_name=u'发布机构id')
     issue_org_name = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'发布机构名称')
     issue_date = models.DateField(blank=True, null=True, verbose_name=u'发布日期')

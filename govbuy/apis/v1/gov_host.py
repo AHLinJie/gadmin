@@ -37,7 +37,10 @@ def get_crawl_page_by_host_and_project_page_url(host_id, project_page_url):
     # type:(int, text_type) -> Optional[CrawlPage]
     """获取列表页面记录(根据主站链接和内容页路径)
     """
-    return CrawlPage.objects.filter(host_id=host_id, project_page_url=project_page_url).first()
+    cp = CrawlPage.objects.filter(host_id=host_id, project_page_url__endswith=project_page_url).first()
+    if cp:
+        return cp
+    return CrawlPage.objects.filter(project_page_url__endswith=project_page_url).first()
 
 
 def get_uncrawled_purchase_urls():
@@ -47,7 +50,7 @@ def get_uncrawled_purchase_urls():
     gs = CrawlPage.objects.filter(is_crawled=False)
     data = []
     for g in gs:
-        data.append(g.project_page_link)
+        data.append(g.project_page_link())
     return data
 
 
@@ -60,9 +63,11 @@ def crawled_detail_page_content(crawl_url, project_name, project_content):
     host_id = get_host_id_by_host_url('http://' + host_url.strip())
     crawlpage = get_crawl_page_by_host_and_project_page_url(host_id, project_page_url)
     now = datetime.datetime.now()
-    print 'id ======================>', crawlpage.id
+    if not crawlpage:
+        print '从爬虫没有找到项目爬虫url:%s' % crawl_url
     if project_name and project_content:
-        crawlpage.logogram = project_name.strip()
+        if len(project_name) < 64:
+            crawlpage.logogram = project_name.strip()
         crawlpage.crawl_time = now
         crawlpage.html_source_code = project_content.strip()
         crawlpage.is_crawled = True

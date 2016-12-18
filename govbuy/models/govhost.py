@@ -49,6 +49,16 @@ def accessory_path(instance, filename):
 
 
 class CrawlPage(BaseModel):
+    EXTRACT_NO = 'no'
+    EXTRACT_MANUAL = 'manual'
+    EXTRACT_MACHINE = 'machine'
+    EXTRACT_CORRECT = 'correct'
+    EXTRACT_TYPE = (
+        (EXTRACT_NO, '未处理'),
+        (EXTRACT_MANUAL, '人工提取'),
+        (EXTRACT_MACHINE, '机器提取'),
+        (EXTRACT_CORRECT, '人工矫正'),
+    )
     host_id = models.IntegerField(db_index=True, verbose_name=u'主站id')
     host_url = models.CharField(max_length=128, verbose_name=u'站点地址')
     logogram = models.CharField(max_length=64, blank=True, verbose_name=u'简写')
@@ -56,6 +66,8 @@ class CrawlPage(BaseModel):
     is_crawled = models.BooleanField(default=False, verbose_name=u'是否抓取完成')
     crawl_time = models.DateTimeField(blank=True, null=True, verbose_name=u'抓取时间')
     html_source_code = models.TextField(max_length=102400, null=True, blank=True, verbose_name=u'页面原始内容')
+    extract_type = models.CharField(max_length=8, default=EXTRACT_MACHINE, choices=EXTRACT_TYPE, db_index=True,
+                                    verbose_name='提取方式')
     accessory = models.FileField(upload_to=accessory_path, blank=True, verbose_name=u'附件')
 
     class Meta:
@@ -69,6 +81,8 @@ class CrawlPage(BaseModel):
         return u'%s-%s' % (self.id, self.host_url)
 
     def project_page_link(self):
+        if 'http' in self.project_page_url:
+            return self.project_page_url
         if 'http' not in self.host_url:
             return ''.join(['http://', self.host_url, self.project_page_url])
         return ''.join([self.host_url, self.project_page_url])

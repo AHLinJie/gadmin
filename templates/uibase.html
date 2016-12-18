@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    {% block meta %}
+    {% endblock %}
+
+    <title>{% block title %}{% endblock %}</title>
+    <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "bootstrap/css/bootstrap-theme.css" %}" rel="stylesheet">
+    <link href="{% static "datetimepicker/css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
+    <link href="{% static "jquery/css/jquery-ui-1.10.1.css" %}" rel="stylesheet">
+    {% block head_link %}
+    {% endblock %}
+
+    <script src="{% static "jquery/jquery-3.1.1.min.js" %}"></script>
+    <script src="{% static "jquery/jquery.min-2.2.3.js" %}"></script>
+    <script src="{% static "jquery/jquery.form.js" %}"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datetimepicker/js/moment.js" %}"></script>
+    <script src="{% static "datetimepicker/js/bootstrap-datetimepicker.min.js" %}"></script>
+    <script src="{% static "layer-v3.0.1/layer.js" %}"></script>
+    {% block head_script %}
+    {% endblock %}
+
+    <style>
+        div {
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #bg-div {
+            min-height: 100%;
+            min-width: 100%;
+            display: flex;
+            align-items: stretch;
+            position: relative;
+        }
+
+        .vertical {
+            margin: 15px auto 15px auto;
+        }
+
+        .vertical-1 {
+            width: 15%;
+        }
+
+        .vertical-slip {
+            width: 1%;
+            background-color: #586370;
+        }
+
+        .vertical-2 {
+            width: 84%;
+        }
+
+        .horizontal {
+            margin: 15px auto 15px auto;
+        }
+
+        .horizontal-1 {
+            height: 6%;
+        }
+
+        .horizontal-2 {
+            height: 80%;
+        }
+    </style>
+    {% block customcss %}
+    {% endblock %}
+</head>
+<body>
+
+<div id="bg-div">
+    <div class="col-md-2 vertical vertical-1">
+        {% block menue %}
+        {% endblock %}
+        <div class="alert alert-success" role="alert">
+            <h4>当前用户:
+                <small>{{ request.user.username }}</small>
+            </h4>
+        </div>
+
+        <div class="list-group " aria-expanded="true">
+            <a class="list-group-item active " href="/ui/" class="list-group-item">Home</a>
+            <a href="/admin/" class="list-group-item">Admin</a>
+        </div>
+        <div class="list-group " aria-expanded="true">
+            <a href="#" class="list-group-item active " data-toggle="collapse" data-target="#spider"
+               aria-controls="demo50" aria-expanded="true">爬虫</a>
+            <div class="collapse in" id="spider">
+                <a href="/govbuy/vcrawl/" class="list-group-item">审核爬取内容</a>
+                <a href="#" class="list-group-item">Morbi leo risus</a>
+                <a href="#" class="list-group-item">Porta ac consectetur ac</a>
+                <a href="#" class="list-group-item">Vestibulum at eros</a>
+            </div>
+        </div>
+    </div>
+    <div class="vertical vertical-slip">
+    </div>
+    <div class="col-md-10 vertical vertical-2">
+        <div class="col-md-12 horizontal horizontal-1">
+            <h3>
+                {% block workname %}
+                {% endblock %}
+            </h3>
+        </div>
+        <div class="col-md-12 horizontal horizontal-2">
+            {% block workzone %}
+            {% endblock %}
+        </div>
+        <div class="col-md-12 horizontal horizontal-1">
+            {% block assist %}
+            {% endblock %}
+        </div>
+    </div>
+
+    {% block tail_script %}
+    {% endblock %}
+</div>
+<script>
+    $(document).ready(function () {
+        var slip = $(".vertical-slip");
+        var canDrag = false;
+        $(slip).on('mouseover', function () {
+            $('html,body').css('cursor', 'col-resize');
+        });
+        $(slip).on('mouseout', function () {
+            $('html,body').css('cursor', 'default');
+        });
+        $(slip).on('mousedown', function () {
+            canDrag = true;
+            slip.css("background-color", "yellow");
+        });
+        $(this).on('mouseup', function () {
+            canDrag = false;
+            slip.css("background-color", "#586370");
+        });
+        $(this).mousemove(function (e) {
+            var bodyWidth = $('body').width();
+            var mouseDownPosiX = e.pageX;
+            if (canDrag) {
+                slip.css("background-color", "yellow");
+                $('.vertical-1').css('width', parseInt(mouseDownPosiX / bodyWidth * 100) + '%');
+                $('.vertical-2').css('width', 100 - parseInt(mouseDownPosiX / bodyWidth * 100) + '%');
+            }
+        });
+    });
+    function serverData(data, func, url, type) {
+        $.ajax({
+            type: type,
+            url: url,
+            data: data,
+            dataType: 'json',
+            success: func,
+            error: function (data) {
+                console.log('debug data:', data);
+                if (data.status == 403) {
+                    layer.msg('您还没有登陆哦!');
+                }
+                else {
+                    layer.msg(data.responseText);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -24,6 +24,7 @@ SECRET_KEY = 'k7@$8-7v3%khpf1r3d=!@cyzmkyp*j0_ae&$u^1nuv7w$dsdqo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'core',
     'govbuy',
     'django_celery_beat',
+    'wordutil',
 ]
 
 MIDDLEWARE = [
@@ -52,11 +54,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'gadmin.urls'
+TEMPLATES_ROOT = os.path.join(BASE_DIR, "templates")
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,4 +119,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static/'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root/')
 MEDIA_ROOT = '/media/'

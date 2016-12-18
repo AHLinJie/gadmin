@@ -8,3 +8,4 @@ celery==4.0.0
 django-celery-beat==1.0.1
 django-celery-results==1.0.1
 python-scrapyd-api==2.0.1
+jieba==0.38

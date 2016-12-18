@@ -95,7 +95,7 @@ class CrawlPageAdmin(admin.ModelAdmin):
         'created'
     )
     list_filter = ('is_crawled',)
-    search_fields = ('host_id', 'html_source_code', 'logogram')
+    search_fields = ('host_id', 'html_source_code', 'logogram', 'project_page_url')
     date_hierarchy = 'crawl_time'
 
     def target_page(self, obj):

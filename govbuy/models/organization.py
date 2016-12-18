@@ -8,15 +8,18 @@ logger = logging.getLogger(__name__)
 
 
 class Organization(BaseModel):
+    ISSUE_TYPE = 'issue'
+    OTHER_TYPE = 'other'
     BID_TYPE = 'bid'
     TENDER_TYPE = 'tender'
     AGENCY_TYPE = 'agency'
-    ORG_TYPE = (
+    ORG_TYPES = (
+        (ISSUE_TYPE, u'发布方'),
         (BID_TYPE, u'招标方'),
         (TENDER_TYPE, u'投标方'),
         (AGENCY_TYPE, u'代理方'),
     )
-    org_type = models.CharField(max_length=8, verbose_name=u'类型')
+    org_type = models.CharField(max_length=8, choices=ORG_TYPES, verbose_name=u'类型')
     consistent_credit_code = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'统一信用代码')
     name = models.CharField(max_length=128, unique=True, verbose_name=u'机构名称')
     address = models.CharField(max_length=256, blank=True, null=True, verbose_name=u'地址')

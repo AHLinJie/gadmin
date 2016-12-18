@@ -1,0 +1,201 @@
+{% extends "uibase.html" %}
+{% load static %}
+{% block head_script %}
+    <script src="{% static "govbuy/crawl_page/vcrawl.js" %}"></script>
+{% endblock %}
+
+
+{% block customcss %}
+    <style>
+        input.long-input {
+            width: 85%;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+    爬虫项目内容校对页面
+{% endblock %}
+
+{% block workname %}
+    爬虫内容审查:
+    <a href="/govbuy/vcrawl/?craw_page_id={{ crawl.id |add:-1 }}">
+        <span class="glyphicon glyphicon-backward"></span>
+    </a>
+    &nbsp;&nbsp;
+    <a target="_blank" href="{{ crawl.project_page_link }}">{{ crawl.id }}: {{ crawl.logogram }}</a>
+    &nbsp;&nbsp;
+    <a href="/govbuy/vcrawl/?craw_page_id={{ crawl.id |add:1 }}">
+        <span class="glyphicon glyphicon-forward"></span>
+    </a>
+{% endblock %}
+
+{% block workzone %}
+    <div class="col-md-2" style="padding-right: 2px; padding-left: 2px;">
+        <h5>原始内容:</h5>
+        <div class="col-md-12" style="padding-right: 2px; padding-left: 2px;">
+            <textarea rows="28" readonly="readonly" style="width:100%;">
+            {{ crawl.html_source_code }}
+            </textarea>
+        </div>
+    </div>
+    <div class="col-md-5" style="padding-right: 2px; padding-left: 2px;">
+        <h5>机构添加:</h5>
+        <div class="col-md-12" style="padding-right: 2px; padding-left: 2px;">
+            <form class="form-inline" id="org-add-form" type="post">
+                <div class="form-group">
+                    <label>机构名称:</label>
+                    <input type="text" class="form-control" name="org_name" id="org-name">
+                </div>
+                <div class="form-group">
+                    <label>机构类型:</label>
+                    <select class="form-control" name="org_type">
+                        {% for org_type in org_types %}
+                            <option value="{{ org_type.0 }}">{{ org_type.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" onsubmit="addOrg" class="btn btn-default">添加</button>
+            </form>
+        </div>
+        <h5 data-toggle="collapse" data-target="#project-info" aria-controls="project-info" aria-expanded="true">项目信息添加:<span
+                class="glyphicon glyphicon-chevron-down"></span></h5>
+        <div class="col-md-12 collapse in" id="project-info" style="padding-right: 2px; padding-left: 2px;">
+            <form id="project-info-add-form">
+                <div>
+                    <label>名称&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+                    <input type="text" name="name" class="long-input" value="{{ crawl.logogram }}">
+                </div>
+                <div>
+                    <label>编号&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+                    <input type="text" class=" " name="bid_no">
+                </div>
+                <div>
+                    <label>招标人&nbsp&nbsp&nbsp</label>
+                    <input type="text" name="bid_person" class="long-input">
+                </div>
+                <div>
+                    <label>标包划分</label>
+                    <input type="text" class=" " name="bid_division">
+                    <label>发布日期</label>
+                    <input type="text" class="date-picker" name="issue_date">
+                </div>
+                <div>
+                    <label>开始时间</label>
+                    <input type="text" class="date-picker" name="let_contract_time">
+                    <label>截止时间</label>
+                    <input type="text" class="date-picker" name="off_bid_time">
+                </div>
+                <div>
+                    <label>工开时间</label>
+                    <input type="text" class="date-picker" name="work_start_time">
+                    <label>竣工时间</label>
+                    <input type="text" class="date-picker" name="work_end_time">
+                </div>
+                <div>
+                    <label>联系人&nbsp&nbsp&nbsp</label>
+                    <input type="text" class=" " name="contacts_name">
+                    <label>联系电话</label>
+                    <input type="text" class=" " name="contacts_phone">
+                </div>
+                <div>
+                    <label>联系地址</label>
+                    <input type="text" name="contacts_address" class="long-input">
+                </div>
+                <div>
+                    <label>施工地点</label>
+                    <input type="text" name="implement_address" class="long-input">
+                </div>
+                <div>
+                    <label>项目预算</label>
+                    <input type="text" class=" " name="budget">
+                    <label>资金来源</label>
+                    <input type="text" class=" " name="capital_source">
+                </div>
+                <div>
+                    <label>资质要求</label>
+                    <input type="text" class="long-input" name="qualification_requirement">
+                </div>
+                <div>
+                    <label>项目进度</label>
+                    <select name="project_progress">
+                        {% for pro_progres in pro_progress %}
+                            <option value="{{ pro_progres.0 }}">{{ pro_progres.1 }}</option>
+                        {% endfor %}
+                    </select>
+                    <label>审查方式</label>
+                    <select name="qualification_type">
+                        {% for qualification_type in qualification_types %}
+                            <option value="{{ qualification_type.0 }}">{{ qualification_type.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>内容描述</label>
+                    <input type="text" class="long-input" name="content_desc">
+                </div>
+                <div>
+                    <label>备注&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+                    <input type="text" class="long-input" name="memo">
+                </div>
+                <div>
+                    <label>发布机构</label>
+                    <input type="text" name="issue_org_name" class="long-input" id="issue_org_name" value="{{ issue_org_name }}">
+                </div>
+                <div>
+                    <label>代理机构</label>
+                    <input type="text" name="agency_org_name" class="long-input" id="agency_org_name" value="{{ agency_org_name }}">
+                </div>
+                <button type="submit" style="float: right">提交</button>
+            </form>
+        </div>
+        <h5>中标结果添加:<span class="glyphicon glyphicon-chevron-down"></span></h5>
+        <h5>负责人添加:<span class="glyphicon glyphicon-chevron-down"></span></h5>
+
+    </div>
+    <div class="col-md-5" style="padding-right: 2px; padding-left: 2px;">
+        <h5>分词结果:</h5>
+        <div class="col-lg-6" style="padding-right: 2px; padding-left: 2px;">
+            <div class="input-group">
+                <span class="input-group-addon glyphicon glyphicon-trash" onclick="clearDicInput()"></span>
+                <input type="text" class="form-control" id="input-dic-lib-word">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">加入分词库<span
+                            class="caret"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        {% for lib in dict_libs %}
+                            <li><a onclick="addJieBaDicLib('{{ lib.0 }}')" class="add-word-2-jieba-dic">{{ lib.1 }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" style="padding-right: 2px; padding-left: 2px;">
+            <div class="input-group">
+                <span class="input-group-addon glyphicon glyphicon-trash" onclick="clearSynonymDicInput()"></span>
+                <input type="text" class="form-control" id="input-synonym-word">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">加入近义词<span
+                            class="caret"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        {% for field in fields %}
+                            <li><a onclick="addSynonym('{{ field.attname }}')"
+                                   class="add-word-2-synonym">{{ field.verbose_name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12" style="padding-right: 2px; padding-left: 2px;">
+            {% for size_fenci in  fenci_data %}
+                <span style="padding: 3px;background: yellowgreen;
+                line-height: 25px" start="{{ size_fenci.1 }}" end="{{ size_fenci.2 }}"
+                      class="testforclick"
+                      onclick="addToSynonymInput('{{ size_fenci.0 }}')"
+                      ondblclick="addToDictInput('{{ size_fenci.0 }}')">{{ size_fenci.0 }}</span>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
