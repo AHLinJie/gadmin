@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'deploy',
     'govbuy',
     'django_celery_beat',
     'wordutil',

@@ -8,3 +8,4 @@ logger = logging.getLogger(__name__)
 
 def rootui(request):
     return render(request, 'uibase.html')
+
