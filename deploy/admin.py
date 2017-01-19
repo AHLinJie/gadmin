@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 import subprocess
 import commands
 
+
 class DeployCilAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'created')
     list_filter = ('created', 'is_valid')
@@ -20,7 +21,7 @@ class DeployCilAdmin(admin.ModelAdmin):
             return self.message_user(request, '拒絕執行多條命令')
         command = queryset.first().command
         code, outs = commands.getstatusoutput(command)
-        self.message_user(request, u'執行命令: %s'%' '.join(command))
+        self.message_user(request, u'執行命令: %s' % ' '.join(command))
         for out in outs.split('\n'):
             self.message_user(request, u'%s' % out)
         origin_url = request.get_full_path()

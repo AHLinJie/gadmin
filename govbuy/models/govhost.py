@@ -86,3 +86,4 @@ class CrawlPage(BaseModel):
         if 'http' not in self.host_url:
             return ''.join(['http://', self.host_url, self.project_page_url])
         return ''.join([self.host_url, self.project_page_url])
+

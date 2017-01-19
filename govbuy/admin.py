@@ -96,7 +96,6 @@ class CrawlPageAdmin(admin.ModelAdmin):
     )
     list_filter = ('is_crawled',)
     search_fields = ('host_id', 'html_source_code', 'logogram', 'project_page_url')
-    date_hierarchy = 'crawl_time'
 
     def target_page(self, obj):
         x = '<a target="_blank" href="%s">%s</a>' % (obj.project_page_link(), obj.logogram)
