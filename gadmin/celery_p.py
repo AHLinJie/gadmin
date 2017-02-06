@@ -21,12 +21,12 @@ app.conf.beat_schedule = {
 
     'list_page': {
         'task': 'govbuy.tasks.task_spider_govbuy_content_spider',
-        'schedule': crontab(minute='8', hour='*/3'),
+        'schedule': crontab(minute='8', hour='*/1'),
         'args': (16, 16),
     },
     'content_page': {
         'task': 'govbuy.tasks.task_spider_govbuy_list_by_spider_one_page',
-        'schedule': crontab(minute='0', hour='*/5'),
+        'schedule': crontab(minute='0', hour='*/2'),
         'args': (16, 16),
     },
 }
