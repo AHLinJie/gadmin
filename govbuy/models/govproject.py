@@ -12,6 +12,8 @@ class GovProject(BaseModel):
     STUDY_OUT = 'study_out'
     BID = 'bid'
     WIN = 'win'
+    ABANDON = 'abandon'
+    ABORTION = 'abortion'
     START_WORK = 'working'
     END = 'end'
     DIE = 'die'
@@ -20,6 +22,8 @@ class GovProject(BaseModel):
         (STUDY_OUT, u'拟定'),
         (BID, u'招标中'),
         (WIN, u'中标'),
+        (ABANDON, u'废标'),
+        (ABORTION, u'流标'),
         (START_WORK, u'开工'),
         (END, u'结束'),
         (DIE, u'中止'),

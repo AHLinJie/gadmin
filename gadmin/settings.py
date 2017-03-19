@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Django settings for gadmin project.
 
@@ -130,21 +131,20 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root/')
 MEDIA_ROOT = '/media/'
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'console':{
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
-            },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
         },
+    },
     'loggers': {
         'django.db.backends': {
             'handlers': ['console'],
             'propagate': True,
-            'level':'DEBUG',
+            'level': 'DEBUG',
         },
     }
 }
@@ -164,3 +164,5 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
 
+
+# uwsgi --ini mysite_uwsgi.ini  运行文件

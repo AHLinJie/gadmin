@@ -1,0 +1,23 @@
+# mysite_uwsgi.ini file
+[uwsgi]
+
+# Django-related settings
+# the base directory (full path)
+chdir           = /home/jielin/workspace/gov-business/gadmin
+# Django's wsgi file
+module          = gadmin.wsgi
+# the virtualenv (full path)
+home            = /home/jielin/workspace/gov-business/ve
+
+# process-related settings
+# master
+master          = true
+# maximum number of worker processes
+processes       = 3
+# the socket (use the full path to be safe
+socket          = /home/jielin/workspace/gov-business/gadmin/gadmin.sock
+# ... with appropriate permissions - may be needed
+chmod-socket    = 666
+# clear environment on exit
+vacuum          = true
+gevent		= 100
