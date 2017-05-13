@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import unicode_literals, absolute_import
 import logging
+from .gov_host import jieba_fenci_for_crawl_doc
 
 logger = logging.getLogger(__name__)
 
@@ -51,3 +52,39 @@ def add_gov_project(name, issue_date, *args, **kwargs):
             setattr(p, k, v)
     p.save()
     return state, p
+
+
+def get_gov_project_model_attr_list():
+    fds = get_gov_project_model_fields()
+    return [{'attname': fd.attname, 'verbose_name': fd.verbose_name} for fd in fds]
+
+
+def update_project_by_crawl_doc(doc):
+    """
+    根据爬虫爬取内容 填写项目的数据
+    :return:
+    """
+    from wordutil.apis.v1.govproattrsyn import get_gov_project_syn_att_list
+    fenci = jieba_fenci_for_crawl_doc(doc=doc)
+    atts = get_gov_project_syn_att_list()
+
+    new_doc = ''
+    for d in fenci:
+        new_doc += d[0]
+        for att in atts:
+            if d[0] in att['att_set']:
+                att['att_index_start'] = d[1]  # 2: 分词元组的最后一个元素,即最后一个index
+                att['att_index_end'] = d[2]  # 2: 分词元组的最后一个元素,即最后一个index
+
+    atts = sorted(atts, key=lambda k: k['att_index_start'])  # 排序 准备取值
+    max_len = len(atts)
+    for n, att in enumerate(atts):
+        if att['att_index_start'] is None:
+            continue
+        if n + 1 > max_len:
+            break
+        if n + 1 == max_len:
+            value = new_doc[att['att_index_end']::]
+        else:
+            value = new_doc[att['att_index_end'] + 1: atts[n + 1]['att_index_start']]
+        print att['attname'], att['verbose_name'], '==>', value

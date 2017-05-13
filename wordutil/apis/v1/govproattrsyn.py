@@ -3,6 +3,8 @@ from __future__ import unicode_literals, absolute_import
 import logging
 import operator
 
+from govbuy.apis.v1.govproject import get_gov_project_model_attr_list
+
 logger = logging.getLogger(__name__)
 
 
@@ -115,3 +117,28 @@ def add_synonym_word_2_db(word, attname):
             code = 1 if state else 0
             return code, syn.main_word, syn.synonym_word
     return 0, '', ''
+
+
+def get_gov_project_syn_att_list():
+    """
+    [
+        {
+            "attname":
+            "verbose_name":
+            "att_index_start":
+            "att_index_end":
+            "att_set":
+        }
+    ]
+    :return:
+    """
+    origin_attr = get_gov_project_model_attr_list()
+    from ...models.govproattr import GovProAttrSyn
+    gs = GovProAttrSyn.object.filter(attribute_field__in=[oa['attname'] for oa in origin_attr])
+    for oa in origin_attr:  # 找到同條目的进义词集合
+        oa['att_index_start'] = None
+        oa['att_index_end'] = None
+        att_set = set([g.synonym_word for g in gs if g.attribute_field == oa['attname']])
+        att_set.add(oa['verbose_name'])
+        oa['att_set'] = att_set
+    return origin_attr

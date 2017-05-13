@@ -1,14 +1,10 @@
 # coding=utf-8
 from __future__ import absolute_import, unicode_literals
-import re
-import os
-import jieba
 import subprocess
 import json
 
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse, Http404
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 from scrapyd_api import ScrapydAPI
@@ -20,6 +16,8 @@ from wordutil.apis.v1.govproattrsyn import add_synonym_word_2_db
 
 from .apis.v1.govproject import get_gov_project_model_fields, add_gov_project
 from .apis.v1.organization import add_organization
+from .apis.v1.gov_host import jieba_fenci_for_crawl_doc, get_crawl_by_id
+from .apis.v1.govproject import update_project_by_crawl_doc
 
 
 def get_doc_content(doc_file_name):
@@ -121,26 +119,18 @@ def get_project_crawl_content_verify(request):
         crawl = CrawlPage.objects.all().order_by('-created').first()
     org_types = Organization.ORG_TYPES
 
-    # 加载jieba词典
-    for lib in JIEBA_CUSTOM_LIBS:
-        prodict = os.path.join(settings.STATICFILES_DIRS[0], 'jiebadic', lib[0])
-        try:
-            jieba.load_userdict(prodict)
-        except IOError:
-            continue
     fields = []
     fs = get_gov_project_model_fields()
     for f in fs:
         if f.attname not in ['id', 'created', 'modified', 'memo', 'accessory']:
             fields.append({'attname': f.attname, 'verbose_name': f.verbose_name})
-    fenci_data = ''
     if not crawl:
         return render(request, 'crawPageContent.html', {})
+
+    fenci_data = ''
     if crawl.html_source_code:
-        crawl.html_source_code = crawl.html_source_code.replace(u'\xa0', '')
-        regex = re.compile(r'[\n\r\t；（）。、：，的]')  # 去除换行 回车 制表符 中文标点符号
-        t = regex.sub("", crawl.html_source_code)
-        fenci_data = jieba.tokenize(t)  # 结巴分词
+        fenci_data = jieba_fenci_for_crawl_doc(crawl.html_source_code)
+
     return render(request, 'crawPageContent.html', {'crawl': crawl,
                                                     'org_types': org_types,
                                                     'fenci_data': fenci_data,
@@ -149,3 +139,11 @@ def get_project_crawl_content_verify(request):
                                                     'dict_libs': JIEBA_CUSTOM_LIBS,
                                                     'fields': fields
                                                     })
+
+
+@csrf_exempt
+def fill_crawl_content_2_gov_pro_info(request):
+    craw_id = request.GET.get('crawl_id')
+    crawl = get_crawl_by_id(int(craw_id))
+    update_project_by_crawl_doc(doc=crawl.html_source_code)
+    return HttpResponse(json.dumps({'code': 0}))

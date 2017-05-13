@@ -1,8 +1,13 @@
 # coding=utf-8
 from __future__ import unicode_literals, absolute_import
+import os
+import jieba
+import re
 import datetime
 import logging
 from ...models import GovHostInfo, CrawlPage
+from wordutil.constans import JIEBA_CUSTOM_LIBS
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +36,10 @@ def get_govs_purchase_urls_list_by_gov_name(name):
     for g in gs:
         data.append(g.purchase_url)
     return data
+
+
+def get_crawl_by_id(id):
+    return CrawlPage.objects.get(id=id)
 
 
 def get_crawl_page_by_host_and_project_page_url(host_id, project_page_url):
@@ -72,3 +81,32 @@ def crawled_detail_page_content(crawl_url, project_name, project_content):
         crawlpage.html_source_code = project_content.strip()
         crawlpage.is_crawled = True
         crawlpage.save()
+
+
+def jieba_fenci_for_crawl_doc(doc):
+    """结巴分词
+    """
+    for lib in JIEBA_CUSTOM_LIBS:
+        prodict = os.path.join(settings.STATICFILES_DIRS[0], 'jiebadic', lib[0])
+        try:
+            jieba.load_userdict(prodict)
+        except IOError:
+            continue
+
+    rs = ['\xa0',
+          '一、',
+          '二、',
+          '三、',
+          '四、',
+          '五、',
+          '六、',
+          '七、',
+          '八、',
+          '九、',
+          '十、']
+    for r in rs:
+        doc = doc.replace(r, '')
+    regex = re.compile(r'[\n\r\t,.:\-"；（）。、：，的<>》《()]')  # 去除换行 回车 制表符 中文标点符号
+    t = regex.sub("", doc)
+    fenci_data = jieba.tokenize(t)  # 结巴分词
+    return fenci_data

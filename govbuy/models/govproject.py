@@ -9,6 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class GovProject(BaseModel):
+    INQUIRY_TYPE = 'inquiry'
+    BID_TYPE = (
+        (INQUIRY_TYPE, '询价采购'),
+    )
     STUDY_OUT = 'study_out'
     BID = 'bid'
     WIN = 'win'
@@ -41,7 +45,10 @@ class GovProject(BaseModel):
     issue_date = models.DateField(blank=True, null=True, verbose_name=u'发布日期')
     bid_no = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'招标编号')
     bid_person = models.CharField(max_length=128, verbose_name=u'招标人')
-    bid_org_id = models.IntegerField(verbose_name=u'招标机构id')
+    bid_org_id = models.IntegerField(verbose_name=u'招标机构id')  # 招标人的机构id
+    purchase_org = models.CharField(max_length=128, null=True, verbose_name=u'招标采购机构')
+    purchase_org_id = models.IntegerField(verbose_name=u'招标采购机构id', null=True)  # 招标采购机构id
+    bid_type = models.CharField(max_length=16, choices=BID_TYPE, blank=True, null=True, verbose_name=u'招标方式')
     let_contract_time = models.DateTimeField(blank=True, null=True, verbose_name=u'开始招标时间')
     off_bid_time = models.DateTimeField(blank=True, null=True, verbose_name=u'截止投标时间')
     work_start_time = models.DateTimeField(blank=True, null=True, verbose_name=u'工期开始时间')
@@ -54,7 +61,7 @@ class GovProject(BaseModel):
     bid_division = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'标包划分')
     budget = models.IntegerField(default=0, verbose_name=u'项目预算')
     capital_source = models.CharField(max_length=32, blank=True, null=True, verbose_name=u'资金来源')
-    qualification_requirement = models.CharField(max_length=512, blank=True, null=True, verbose_name=u'资质要求')
+    qualification_requirement = models.CharField(max_length=10240, blank=True, null=True, verbose_name=u'资质要求')
     qualification_type = models.CharField(default=POST_QUALIFICATION, max_length=16, choices=QUALIFICATION_TYPE,
                                           verbose_name=u'资格审查方式')
     content_desc = models.CharField(max_length=1024, blank=True, null=True, verbose_name=u'项目内容描述')

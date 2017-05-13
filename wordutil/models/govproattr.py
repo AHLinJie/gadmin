@@ -9,6 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class GovProAttrSyn(BaseModel):
+    """
+    特征选择
+    """
     main_word = models.CharField(max_length=64, db_index=True, verbose_name='主词', help_text='属性字段名称')
     attribute_field = models.CharField(max_length=32, verbose_name='属性字段')
     synonym_word = models.CharField(max_length=64, verbose_name='近义词')
@@ -27,6 +30,9 @@ class GovProAttrSyn(BaseModel):
 
 
 class GovProAttrExclude(BaseModel):
+    """
+    特征剔除（值剔除），某个字段的数值不能在此表中　
+    """
     main_word = models.CharField(max_length=64, db_index=True, verbose_name='主词', help_text='属性字段名称')
     attribute_field = models.CharField(max_length=32, verbose_name='属性字段')
     exclude_word = models.CharField(max_length=64, verbose_name='排斥词')
